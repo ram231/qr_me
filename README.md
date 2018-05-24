@@ -2,10 +2,10 @@
 
 **Auto generated QRCODE for Attendance based App to ensure Security and fair use of the Application**
 
-#Progress
+# Progress
 - Added Drawer for testing purposes
 
-##Goals
+## Goals
 - Navigate to another Page
 ## Getting Started
 
