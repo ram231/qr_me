@@ -1,6 +1,6 @@
 # qr_me
 
-A new Flutter project.
+**Auto generated QRCODE for Attendance based App to ensure Security and fair use of the Application**
 
 ## Getting Started
 
