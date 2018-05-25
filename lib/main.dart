@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'home.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: "Hello World App",
-      home: MyHomePage(),
+      home: LoginPage(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColorBrightness: Brightness.dark,
@@ -19,41 +19,59 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+
+class LoginPage extends StatefulWidget {
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _LoginPageState createState() => new _LoginPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _LoginPageState extends State<LoginPage> {
+  TextEditingController _controller = new TextEditingController();
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: AppBar(
-        title: Text("Hello World"),
-        
-      ),
-      drawer: new Drawer(
-        child: ListView(
+      
+      body: new Center(
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            DrawerHeader(
-              child: new Text("This is the Header"),
+              new Text("QR Me",style: TextStyle(
+              fontSize: 32.0,
+              fontWeight: FontWeight.bold,
+              
             ),
-            ListTile(
-              title: Text("Home"),
-              leading: Icon(Icons.home),
+          ),
+          new Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 64.0),
+            child: TextField(
+              controller: _controller,
+              decoration: InputDecoration(
+                labelText: "Username"
+              ),
             ),
-            ListTile(
-              title: Text("Profile"),
-              leading: Icon(Icons.person),
+          ),
+          new Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 64.0),
+            child: TextField(
+              controller: _controller,
+              decoration: InputDecoration(
+                labelText: "Password"
+              ),
+              obscureText: true,
             ),
-            ListTile(
-              title: Text("Exit"),
-              leading: Icon(Icons.exit_to_app),
-            )
+          ),
+          new Padding(
+            padding: const EdgeInsets.symmetric(vertical:32.0),
+            child: RaisedButton(
+              child: Text("Log in"),
+              onPressed: (){
+                Navigator.of(context).push(new MaterialPageRoute(builder: (context) => MyHomePage()));
+              },
+            ),
+          )
           ],
         ),
-      ),
-      
+      )
     );
   }
 }
