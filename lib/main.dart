@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
       home: LoginPage(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        brightness: Brightness.dark,
         primaryColorBrightness: Brightness.dark,
         primaryColor: Colors.teal,
       ),
@@ -62,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
               controller: _controller,
               decoration: InputDecoration(
                 labelText: "Password",
-                labelStyle: TextStyle(color: Colors.black54),
+                labelStyle: TextStyle(color: Colors.white30),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(const Radius.circular(10.0))
                 )

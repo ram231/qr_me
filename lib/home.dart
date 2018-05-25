@@ -6,38 +6,54 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
- 
   @override
   Widget build(BuildContext context) {
-   return new Scaffold(
-     floatingActionButton: _DiamondFab(
-       child: Icon(Icons.add),
-       onPressed: (){},
-     )
-     ,
-     floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-     bottomNavigationBar: new BottomAppBar(
-       
-       hasNotch: true,
-       color: Colors.black54,
-       child: Row(
-         children: <Widget>[
-           ButtonTheme(
-             height: 6.0,
-             child: ButtonBar(
-               alignment: MainAxisAlignment.spaceBetween,
-               mainAxisSize: MainAxisSize.max,
-               children: <Widget>[
-                 Icon(Icons.home),
-               ],
-             ),
-           )
-         ],
-          )
-     ),
+    return new Scaffold(
+      floatingActionButton: _DiamondFab(
+        notchMargin: 8.0,
+        child: Icon(Icons.add),
+        onPressed: () {},
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: new BottomAppBar(
+          elevation: 2.0,
+          hasNotch: true,
+          color: Colors.black54,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              IconButton(
+                      icon: Icon(Icons.home),
+                      iconSize: 32.0,
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.group_work),
+                      iconSize: 32.0,
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.event_note),
+                      iconSize: 32.0,
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.settings),
+                      iconSize: 32.0,
+                      onPressed: () {},
+                    ),
+            ],
+          )),
       appBar: AppBar(
-        title: Text("Hello World"),
-        
+        title: Text("QR Me"),
+        actions: <Widget>[
+          IconButton(
+            tooltip: "About",
+            icon: Icon(Icons.info),
+            onPressed: (){},
+            iconSize: 24.0,
+          )
+        ],
       ),
       drawer: new Drawer(
         child: ListView(
@@ -56,18 +72,16 @@ class _MyHomePageState extends State<MyHomePage> {
             ListTile(
               title: Text("Exit"),
               leading: Icon(Icons.exit_to_app),
-              onTap: (){
+              onTap: () {
                 Navigator.of(context).pop();
               },
             )
           ],
         ),
       ),
-      
     );
   }
 }
-
 
 class _DiamondFab extends StatefulWidget {
   const _DiamondFab({
@@ -85,7 +99,6 @@ class _DiamondFab extends StatefulWidget {
 }
 
 class _DiamondFabState extends State<_DiamondFab> {
-
   VoidCallback _clearComputeNotch;
 
   @override
@@ -99,7 +112,8 @@ class _DiamondFabState extends State<_DiamondFab> {
           width: 56.0,
           height: 56.0,
           child: IconTheme.merge(
-            data: new IconThemeData(color: Theme.of(context).accentIconTheme.color),
+            data: new IconThemeData(
+                color: Theme.of(context).accentIconTheme.color),
             child: widget.child,
           ),
         ),
@@ -111,13 +125,13 @@ class _DiamondFabState extends State<_DiamondFab> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _clearComputeNotch = Scaffold.setFloatingActionButtonNotchFor(context, _computeNotch);
+    _clearComputeNotch =
+        Scaffold.setFloatingActionButtonNotchFor(context, _computeNotch);
   }
 
   @override
   void deactivate() {
-    if (_clearComputeNotch != null)
-      _clearComputeNotch();
+    if (_clearComputeNotch != null) _clearComputeNotch();
     super.deactivate();
   }
 
@@ -139,13 +153,14 @@ class _DiamondFabState extends State<_DiamondFab> {
     //  notchToCenter is the horizontal distance between the guest's center and
     //  the host's top edge where the notch starts (marked with "*").
     //  We compute notchToCenter by similar triangles:
-    final double notchToCenter =
-      intersection.height * (marginedGuest.height / 2.0)
-      / (marginedGuest.width / 2.0);
+    final double notchToCenter = intersection.height *
+        (marginedGuest.height / 2.0) /
+        (marginedGuest.width / 2.0);
 
     return new Path()
       ..lineTo(marginedGuest.center.dx - notchToCenter, host.top)
-      ..lineTo(marginedGuest.left + marginedGuest.width / 2.0, marginedGuest.bottom)
+      ..lineTo(
+          marginedGuest.left + marginedGuest.width / 2.0, marginedGuest.bottom)
       ..lineTo(marginedGuest.center.dx + notchToCenter, host.top)
       ..lineTo(end.dx, end.dy);
   }
@@ -160,22 +175,22 @@ class _DiamondBorder extends ShapeBorder {
   }
 
   @override
-  Path getInnerPath(Rect rect, { TextDirection textDirection }) {
+  Path getInnerPath(Rect rect, {TextDirection textDirection}) {
     return getOuterPath(rect, textDirection: textDirection);
   }
 
   @override
-  Path getOuterPath(Rect rect, { TextDirection textDirection }) {
+  Path getOuterPath(Rect rect, {TextDirection textDirection}) {
     return new Path()
       ..moveTo(rect.left + rect.width / 2.0, rect.top)
       ..lineTo(rect.right, rect.top + rect.height / 2.0)
-      ..lineTo(rect.left + rect.width  / 2.0, rect.bottom)
+      ..lineTo(rect.left + rect.width / 2.0, rect.bottom)
       ..lineTo(rect.left, rect.top + rect.height / 2.0)
       ..close();
   }
 
   @override
-  void paint(Canvas canvas, Rect rect, { TextDirection textDirection }) {}
+  void paint(Canvas canvas, Rect rect, {TextDirection textDirection}) {}
 
   // This border doesn't support scaling.
   @override
