@@ -42,12 +42,18 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           new Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 64.0),
+            padding: const EdgeInsets.symmetric(horizontal: 64.0,vertical: 12.0),
             child: TextField(
               controller: _controller,
               decoration: InputDecoration(
-                labelText: "Username"
-              ),
+                labelStyle: TextStyle( color: Colors.grey),
+                labelText: "Username",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(const Radius.circular(10.0)),
+                  
+                )
+                
+              )
             ),
           ),
           new Padding(
@@ -55,7 +61,11 @@ class _LoginPageState extends State<LoginPage> {
             child: TextField(
               controller: _controller,
               decoration: InputDecoration(
-                labelText: "Password"
+                labelText: "Password",
+                labelStyle: TextStyle(color: Colors.black54),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(const Radius.circular(10.0))
+                )
               ),
               obscureText: true,
             ),
