@@ -46,6 +46,7 @@ class _LoginPageState extends State<LoginPage> {
             padding:
                 const EdgeInsets.symmetric(horizontal: 64.0, vertical: 12.0),
             child: TextField(
+                
                 controller: _controller,
                 decoration: InputDecoration(
                     labelStyle: TextStyle(color: Colors.grey),
