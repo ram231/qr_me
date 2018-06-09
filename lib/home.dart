@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -6,12 +9,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  // Future<String> getData() async {
+  //   http.Response response = await http.get(
+  //       Uri.encodeFull("https://jsonplaceholder.typicode.com/posts"),
+  //       headers: {"Accept": "application/json"});
+  //   print(response.body);
+  // }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       floatingActionButton: _DiamondFab(
         notchMargin: 8.0,
-        child: Icon(Icons.add),
+        child: Icon(Icons.camera_alt),
         onPressed: () {},
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -23,34 +33,35 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               IconButton(
-                      icon: Icon(Icons.home),
-                      iconSize: 32.0,
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.group_work),
-                      iconSize: 32.0,
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.event_note),
-                      iconSize: 32.0,
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.settings),
-                      iconSize: 32.0,
-                      onPressed: () {},
-                    ),
+                icon: Icon(Icons.home),
+                iconSize: 32.0,
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: Icon(Icons.group_work),
+                iconSize: 32.0,
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: Icon(Icons.event_note),
+                iconSize: 32.0,
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: Icon(Icons.settings),
+                iconSize: 32.0,
+                onPressed: () {},
+              ),
             ],
           )),
+      body: Center(),
       appBar: AppBar(
         title: Text("QR Me"),
         actions: <Widget>[
           IconButton(
             tooltip: "About",
             icon: Icon(Icons.info),
-            onPressed: (){},
+            onPressed: () {},
             iconSize: 24.0,
           )
         ],
@@ -58,9 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
       drawer: new Drawer(
         child: ListView(
           children: <Widget>[
-            DrawerHeader(
-              child: new Text("This is the Header"),
-            ),
+            userProfile,
             ListTile(
               title: Text("Home"),
               leading: Icon(Icons.home),
@@ -73,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: Text("Exit"),
               leading: Icon(Icons.exit_to_app),
               onTap: () {
-                Navigator.of(context).pop();
+                exit(0);
               },
             )
           ],
@@ -83,6 +92,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+final FutureBuilder<FirebaseUser> userProfile = new FutureBuilder(
+                future: FirebaseAuth.instance.currentUser(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return UserAccountsDrawerHeader(
+                      onDetailsPressed: (){},
+                      accountName: Text(snapshot.data.displayName,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 24.0)),
+                      accountEmail: Text(snapshot.data.email),
+                      currentAccountPicture: CircleAvatar(backgroundImage: NetworkImage(snapshot.data.photoUrl)),
+                    );
+                  } else {
+                    return Text("Loading...");
+                  }
+                },
+              );
 class _DiamondFab extends StatefulWidget {
   const _DiamondFab({
     this.child,
