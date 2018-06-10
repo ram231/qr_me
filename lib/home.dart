@@ -3,36 +3,6 @@ import 'dart:io';
 import 'main.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/ui/firebase_animated_list.dart';
-
-final app = FirebaseApp.configure(
-  name: "QR_Me",
-  options: FirebaseOptions(
-    googleAppID: "1:1056505825645:android:8b1bf5e0a61c1e77",
-    apiKey: "AIzaSyDg-VWD1P7slIniG5c_VVD75XIgz0RXph0",
-    databaseURL: "https://qr-me-5d860.firebaseio.com/",
-  ),
-);
-
-class Events {
-  String eventName;
-  String eventDateTime;
-  String hostName;
-  String key;
-
-  Events(this.eventName, this.eventDateTime,this.hostName);
-  Events.fromSnapshot(DataSnapshot snapshot)
-      : eventName = snapshot.value['eventName'],
-        eventDateTime = snapshot.value['eventDateTime'],
-        hostName = snapshot.value['hostName'],
-        key = snapshot.key;
-  toJson() {
-    return {"eventName": eventName, "eventDateTime": eventDateTime,"hostName":hostName};
-  }
-}
-
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => new _MyHomePageState();
@@ -45,44 +15,6 @@ class _MyHomePageState extends State<MyHomePage> {
   //       headers: {"Accept": "application/json"});
   //   print(response.body);
   // }
-
-  List<Events> events=  List();
-  Events event;
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  DatabaseReference eventRef;
-  @override
-    void initState() {
-      // TODO: implement initState
-      super.initState();
-      event = Events("","","");
-      final FirebaseDatabase database = FirebaseDatabase.instance;
-      eventRef = database.reference().child('events');
-      eventRef.onChildAdded.listen(_onEntryAdded);
-      eventRef.onChildChanged.listen(_onEntryChanged);
-    }
-
-    _onEntryAdded(Event e) {
-    setState(() {
-      events.add(Events.fromSnapshot(e.snapshot));
-    });
-  }
-
-  _onEntryChanged(Event e) {
-    var old = events.singleWhere((entry) {
-      return entry.key == e.snapshot.key;
-    });
-    setState(() {
-      events[events.indexOf(old)] = Events.fromSnapshot(e.snapshot);
-    });
-  }
-    void handleSubmit() {
-    final FormState form = formKey.currentState;
-    if (form.validate()) {
-      form.save();
-      form.reset();
-      eventRef.push().set(event.toJson());
-    }
-  }
   @override
   Widget build(BuildContext context) {
     double iconSize = 24.0;
