@@ -4,7 +4,7 @@
 
 # Progress
 - Added Drawer for testing purposes
-- Added Login Page to Route to Home Page.
+- Added Login Page Route to Home Page.
 ## Goals
 - Navigate to another Page
 
