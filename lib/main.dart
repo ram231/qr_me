@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         primaryColorBrightness: Brightness.dark,
-        primaryColor: Colors.blue,
+        primaryColor: Colors.grey,
       ),
     );
   }
@@ -90,15 +90,6 @@ class _LoginPageState extends State<LoginPage> {
                       });
                     },
                   ),
-                  new FutureBuilder<String>(
-                      future: _message,
-                      builder: (_, AsyncSnapshot<String> snapshot) {
-                        return Text(
-                          snapshot.data ?? '',
-                          style: TextStyle(
-                              color: const Color.fromARGB(255, 0, 155, 0)),
-                        );
-                      })
                 ],
               )),
         ],

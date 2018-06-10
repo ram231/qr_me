@@ -30,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
           hasNotch: true,
           color: Colors.black54,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               IconButton(
                 icon: Icon(Icons.home),
@@ -54,7 +54,30 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           )),
-      body: Center(),
+      body: ListView.builder(
+        itemCount: 10,
+        itemBuilder: (context, index) {
+          return Card(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.add),
+                subtitle: Text(
+                    "Just a subcontent of a CARD, basically it does provide description to what you are reading right now."),
+                title: Text("Just a sample project Number: ${index+1}"),
+              ),
+              ButtonTheme.bar(
+                child: ButtonBar(
+                  children: <Widget>[
+                    FlatButton(child: Text("Okay Number ${index + 1}"),onPressed: (){},)
+                  ],
+                ),
+              )
+            ],
+          ));
+        },
+      ),
       appBar: AppBar(
         title: Text("QR Me"),
         actions: <Widget>[
@@ -93,20 +116,23 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 final FutureBuilder<FirebaseUser> userProfile = new FutureBuilder(
-                future: FirebaseAuth.instance.currentUser(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    return UserAccountsDrawerHeader(
-                      onDetailsPressed: (){},
-                      accountName: Text(snapshot.data.displayName,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 24.0)),
-                      accountEmail: Text(snapshot.data.email),
-                      currentAccountPicture: CircleAvatar(backgroundImage: NetworkImage(snapshot.data.photoUrl)),
-                    );
-                  } else {
-                    return Text("Loading...");
-                  }
-                },
-              );
+  future: FirebaseAuth.instance.currentUser(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.done) {
+      return UserAccountsDrawerHeader(
+        onDetailsPressed: () {},
+        accountName: Text(snapshot.data.displayName,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
+        accountEmail: Text(snapshot.data.email),
+        currentAccountPicture:
+            CircleAvatar(backgroundImage: NetworkImage(snapshot.data.photoUrl)),
+      );
+    } else {
+      return Text("Loading...");
+    }
+  },
+);
+
 class _DiamondFab extends StatefulWidget {
   const _DiamondFab({
     this.child,
