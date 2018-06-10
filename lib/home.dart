@@ -1,7 +1,37 @@
+import 'dart:async';
 import 'dart:io';
-
+import 'main.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
+
+final app = FirebaseApp.configure(
+  name: "QR_Me",
+  options: FirebaseOptions(
+    googleAppID: "1:1056505825645:android:8b1bf5e0a61c1e77",
+    apiKey: "AIzaSyDg-VWD1P7slIniG5c_VVD75XIgz0RXph0",
+    databaseURL: "https://qr-me-5d860.firebaseio.com/",
+  ),
+);
+
+class Events {
+  String eventName;
+  String eventDateTime;
+  String hostName;
+  String key;
+
+  Events(this.eventName, this.eventDateTime,this.hostName);
+  Events.fromSnapshot(DataSnapshot snapshot)
+      : eventName = snapshot.value['eventName'],
+        eventDateTime = snapshot.value['eventDateTime'],
+        hostName = snapshot.value['hostName'],
+        key = snapshot.key;
+  toJson() {
+    return {"eventName": eventName, "eventDateTime": eventDateTime,"hostName":hostName};
+  }
+}
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -16,42 +46,126 @@ class _MyHomePageState extends State<MyHomePage> {
   //   print(response.body);
   // }
 
+  List<Events> events=  List();
+  Events event;
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  DatabaseReference eventRef;
+  @override
+    void initState() {
+      // TODO: implement initState
+      super.initState();
+      event = Events("","","");
+      final FirebaseDatabase database = FirebaseDatabase.instance;
+      eventRef = database.reference().child('events');
+      eventRef.onChildAdded.listen(_onEntryAdded);
+      eventRef.onChildChanged.listen(_onEntryChanged);
+    }
+
+    _onEntryAdded(Event e) {
+    setState(() {
+      events.add(Events.fromSnapshot(e.snapshot));
+    });
+  }
+
+  _onEntryChanged(Event e) {
+    var old = events.singleWhere((entry) {
+      return entry.key == e.snapshot.key;
+    });
+    setState(() {
+      events[events.indexOf(old)] = Events.fromSnapshot(e.snapshot);
+    });
+  }
+    void handleSubmit() {
+    final FormState form = formKey.currentState;
+    if (form.validate()) {
+      form.save();
+      form.reset();
+      eventRef.push().set(event.toJson());
+    }
+  }
   @override
   Widget build(BuildContext context) {
+    double iconSize = 24.0;
     return new Scaffold(
       floatingActionButton: _DiamondFab(
         notchMargin: 8.0,
-        child: Icon(Icons.camera_alt),
+        child: Icon(Icons.center_focus_weak),
         onPressed: () {},
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: new BottomAppBar(
-          elevation: 2.0,
-          hasNotch: true,
+          elevation: 8.0,
+          hasNotch: false,
           color: Colors.black54,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.home),
-                iconSize: 32.0,
+              FlatButton(
+                child: Row(
+                  children: <Widget>[
+                    Icon(Icons.home, size: iconSize),
+                    Text(
+                      "Home",
+                      style: TextStyle(fontSize: 16.0),
+                    )
+                  ],
+                ),
                 onPressed: () {},
               ),
-              IconButton(
-                icon: Icon(Icons.group_work),
-                iconSize: 32.0,
+              FlatButton(
+                child: Row(
+                  children: <Widget>[
+                    Icon(Icons.person, size: iconSize),
+                    Text(
+                      "Profile",
+                      style: TextStyle(fontSize: 16.0),
+                    )
+                  ],
+                ),
                 onPressed: () {},
               ),
-              IconButton(
-                icon: Icon(Icons.event_note),
-                iconSize: 32.0,
+              FlatButton(
+                child: Row(
+                  children: <Widget>[
+                    Icon(Icons.event_note, size: iconSize),
+                    Text(
+                      "Events",
+                      style: TextStyle(fontSize: 16.0),
+                    )
+                  ],
+                ),
                 onPressed: () {},
               ),
-              IconButton(
-                icon: Icon(Icons.settings),
-                iconSize: 32.0,
+              FlatButton(
+                child: Row(
+                  children: <Widget>[
+                    Icon(
+                      Icons.settings_applications,
+                      size: iconSize,
+                    ),
+                    Text(
+                      "Settings ",
+                      style: TextStyle(fontSize: 16.0),
+                    )
+                  ],
+                ),
                 onPressed: () {},
               ),
+              // IconButton(
+              //   icon: Icon(Icons.group_work),
+              //   iconSize: 32.0,
+              //   onPressed: () {},
+              // ),
+              // IconButton(
+              //   icon: Icon(Icons.event_note),
+              //   iconSize: 32.0,
+              //   onPressed: () {},
+              // ),
+              // IconButton(
+              //   icon: Icon(Icons.settings),
+              //   iconSize: 32.0,
+              //   onPressed: () {},
+              // ),
             ],
           )),
       body: ListView.builder(
@@ -59,7 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
         itemBuilder: (context, index) {
           return Card(
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ListTile(
                 leading: Icon(Icons.add),
@@ -70,7 +184,10 @@ class _MyHomePageState extends State<MyHomePage> {
               ButtonTheme.bar(
                 child: ButtonBar(
                   children: <Widget>[
-                    FlatButton(child: Text("Okay Number ${index + 1}"),onPressed: (){},)
+                    FlatButton(
+                      child: Text("Okay Number ${index + 1}"),
+                      onPressed: () {},
+                    )
                   ],
                 ),
               )
@@ -102,17 +219,23 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: Icon(Icons.person),
             ),
             ListTile(
-              title: Text("Exit"),
-              leading: Icon(Icons.exit_to_app),
-              onTap: () {
-                exit(0);
-              },
-            )
+                title: Text("Exit"),
+                leading: Icon(Icons.exit_to_app),
+                onTap: () async {
+                  await signOutGoogle();
+                  exit(0);
+                  // Navigator.of(context).pushReplacementNamed('/');
+                })
           ],
         ),
       ),
     );
   }
+}
+
+Future<Null> signOutGoogle() async {
+  await auth.signOut();
+  await googleSignIn.signOut();
 }
 
 final FutureBuilder<FirebaseUser> userProfile = new FutureBuilder(
@@ -122,10 +245,14 @@ final FutureBuilder<FirebaseUser> userProfile = new FutureBuilder(
       return UserAccountsDrawerHeader(
         onDetailsPressed: () {},
         accountName: Text(snapshot.data.displayName,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            )),
         accountEmail: Text(snapshot.data.email),
-        currentAccountPicture:
-            CircleAvatar(backgroundImage: NetworkImage(snapshot.data.photoUrl)),
+        currentAccountPicture: CircleAvatar(
+          backgroundImage: NetworkImage(snapshot.data.photoUrl),
+          minRadius: 4.0,
+        ),
       );
     } else {
       return Text("Loading...");
