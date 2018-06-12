@@ -3,6 +3,11 @@ import 'dart:io';
 import 'main.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'group.dart';
+import 'events.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'datepick.dart';
+
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => new _MyHomePageState();
@@ -15,120 +20,61 @@ class _MyHomePageState extends State<MyHomePage> {
   //       headers: {"Accept": "application/json"});
   //   print(response.body);
   // }
+
+  BodyOfHomePage bodyHome;
+  MyGroupPage groupPage;
+  EventPage eventPage;
+  DateAndTimePickerDemo datePage;
+  List<Widget> pages;
+  Widget currentPage;
+  int currentTab = 0;
+  @override
+  void initState() {
+    // TODO: implement initState
+    bodyHome = BodyOfHomePage();
+    groupPage = MyGroupPage();
+    eventPage = EventPage();
+    datePage = DateAndTimePickerDemo();
+    pages = [bodyHome,groupPage,  eventPage,datePage,];
+    currentPage = bodyHome;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    double iconSize = 24.0;
     return new Scaffold(
       floatingActionButton: _DiamondFab(
         notchMargin: 8.0,
         child: Icon(Icons.center_focus_weak),
         onPressed: () {},
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: new BottomAppBar(
-          elevation: 8.0,
-          hasNotch: false,
-          color: Colors.black54,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              FlatButton(
-                child: Row(
-                  children: <Widget>[
-                    Icon(Icons.home, size: iconSize),
-                    Text(
-                      "Home",
-                      style: TextStyle(fontSize: 16.0),
-                    )
-                  ],
-                ),
-                onPressed: () {},
-              ),
-              FlatButton(
-                child: Row(
-                  children: <Widget>[
-                    Icon(Icons.person, size: iconSize),
-                    Text(
-                      "Profile",
-                      style: TextStyle(fontSize: 16.0),
-                    )
-                  ],
-                ),
-                onPressed: () {},
-              ),
-              FlatButton(
-                child: Row(
-                  children: <Widget>[
-                    Icon(Icons.event_note, size: iconSize),
-                    Text(
-                      "Events",
-                      style: TextStyle(fontSize: 16.0),
-                    )
-                  ],
-                ),
-                onPressed: () {},
-              ),
-              FlatButton(
-                child: Row(
-                  children: <Widget>[
-                    Icon(
-                      Icons.settings_applications,
-                      size: iconSize,
-                    ),
-                    Text(
-                      "Settings ",
-                      style: TextStyle(fontSize: 16.0),
-                    )
-                  ],
-                ),
-                onPressed: () {},
-              ),
-              // IconButton(
-              //   icon: Icon(Icons.group_work),
-              //   iconSize: 32.0,
-              //   onPressed: () {},
-              // ),
-              // IconButton(
-              //   icon: Icon(Icons.event_note),
-              //   iconSize: 32.0,
-              //   onPressed: () {},
-              // ),
-              // IconButton(
-              //   icon: Icon(Icons.settings),
-              //   iconSize: 32.0,
-              //   onPressed: () {},
-              // ),
-            ],
-          )),
-      body: ListView.builder(
-        itemCount: 10,
-        itemBuilder: (context, index) {
-          return Card(
-              child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: Icon(Icons.add),
-                subtitle: Text(
-                    "Just a subcontent of a CARD, basically it does provide description to what you are reading right now."),
-                title: Text("Just a sample project Number: ${index+1}"),
-              ),
-              ButtonTheme.bar(
-                child: ButtonBar(
-                  children: <Widget>[
-                    FlatButton(
-                      child: Text("Okay Number ${index + 1}"),
-                      onPressed: () {},
-                    )
-                  ],
-                ),
-              )
-            ],
-          ));
-        },
-      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      bottomNavigationBar: BottomNavigationBar(
+          currentIndex: currentTab,
+          onTap: (int index) {
+            setState(() {
+              currentTab = index;
+              currentPage = pages[index];
+            });
+          },
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home), title: Text("Home")),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.group), title: Text("Groups")),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.event_available),
+              title: Text("Events"),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add),
+              title: Text("New")
+            )
+          ]),
+      body: currentPage,
       appBar: AppBar(
         title: Text("QR Me"),
+        centerTitle: true,
         actions: <Widget>[
           IconButton(
             tooltip: "About",
@@ -168,6 +114,52 @@ class _MyHomePageState extends State<MyHomePage> {
 Future<Null> signOutGoogle() async {
   await auth.signOut();
   await googleSignIn.signOut();
+}
+
+class BodyOfHomePage extends StatefulWidget {
+  @override
+  _BodyHomeState createState() => _BodyHomeState();
+}
+
+class _BodyHomeState extends State<BodyOfHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: 10,
+      itemBuilder: (context, index) {
+        return Card(
+            color: index % 2 == 0 ? Colors.teal : Colors.deepOrange,
+            elevation: 8.0,
+            margin: EdgeInsets.all(32.0),
+            shape: BeveledRectangleBorder(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(
+                  Icons.event,
+                  size: 64.0,
+                  color: Colors.green,
+                ),
+                ListTile(
+                  leading: Icon(Icons.add),
+                  subtitle: new Container(child: new Text("Hello World")),
+                  title: Text("Just a sample project Number: ${index+1}"),
+                ),
+                ButtonTheme.bar(
+                  child: ButtonBar(
+                    children: <Widget>[
+                      FlatButton(
+                        child: Text("Okay Number ${index + 1}"),
+                        onPressed: () {},
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ));
+      },
+    );
+  }
 }
 
 final FutureBuilder<FirebaseUser> userProfile = new FutureBuilder(

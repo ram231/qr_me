@@ -3,6 +3,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'home.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
+
+final app = FirebaseApp.configure(
+  name: '',
+  options: FirebaseOptions(
+    googleAppID: '1:1056505825645:android:8b1bf5e0a61c1e77',
+    apiKey: 'AIzaSyDg-VWD1P7slIniG5c_VVD75XIgz0RXph0',
+    databaseURL: 'https://qr-me-5d860.firebaseio.com/',
+  ),
+);
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = new GoogleSignIn();
@@ -26,13 +38,16 @@ Future<String> _testSignInWithGoogle() async {
   return 'signInWithGoogle succeeded $user';
 }
 
-void main() => runApp(MyApp());
+void main() async {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
       //showPerformanceOverlay: true,
+      
       title: "Hello World App",
       home: LoginPage(),
       routes: <String, WidgetBuilder>{
@@ -40,9 +55,8 @@ class MyApp extends StatelessWidget {
       },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: Brightness.light,
-        primaryColorBrightness: Brightness.dark,
-        primaryColor: Colors.grey,
+        brightness: Brightness.dark,
+        textSelectionColor: Colors.white
       ),
     );
   }
@@ -60,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.of(context).pushReplacementNamed('/home');
     });
     Future
-        .delayed(new Duration(milliseconds: 50))
+        .delayed(new Duration(seconds: 1))
         .then((_) => _testSignInWithGoogle());
   }
 
@@ -78,9 +92,7 @@ class _LoginPageState extends State<LoginPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          CircularProgressIndicator(
-
-          ),
+          CircularProgressIndicator(),
         ],
       ),
     ));
