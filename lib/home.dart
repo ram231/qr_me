@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'group.dart';
 import 'events.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'datepick.dart';
 
 class MyHomePage extends StatefulWidget {
