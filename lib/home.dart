@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'main.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -34,7 +35,12 @@ class _MyHomePageState extends State<MyHomePage> {
     groupPage = MyGroupPage();
     eventPage = EventPage();
     datePage = DateAndTimePickerDemo();
-    pages = [bodyHome,groupPage,  eventPage,datePage,];
+    pages = [
+      bodyHome,
+      groupPage,
+      eventPage,
+      datePage,
+    ];
     currentPage = bodyHome;
     super.initState();
   }
@@ -65,10 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.event_available),
               title: Text("Events"),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.add),
-              title: Text("New")
-            )
+            BottomNavigationBarItem(icon: Icon(Icons.add), title: Text("New"))
           ]),
       body: currentPage,
       appBar: AppBar(
@@ -100,6 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 leading: Icon(Icons.exit_to_app),
                 onTap: () async {
                   await signOutGoogle();
+                   
                   exit(0);
                   // Navigator.of(context).pushReplacementNamed('/');
                 })

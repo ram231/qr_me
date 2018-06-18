@@ -20,11 +20,16 @@ class _EventPageState extends State<EventPage> {
   void initState() {
     // TODO: implement initState
 
-    myEvents = MyEvents("", "", null);
+    myEvents = MyEvents("", "", "");
     final FirebaseDatabase database = FirebaseDatabase.instance;
+    database.setPersistenceEnabled(true);
+    database.setPersistenceCacheSizeBytes(10000000);
     eventRef = database.reference().child('events');
+    eventRef.keepSynced(true); //Syncs Realtime Database when new data is added.
     eventRef.onChildAdded.listen(_onEntryAdded);
     eventRef.onChildChanged.listen(_onEntryChanged);
+
+
     super.initState();
   }
 
@@ -51,6 +56,8 @@ class _EventPageState extends State<EventPage> {
       eventRef.push().set(myEvents.toJson());
     }
   }
+
+
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -128,26 +135,35 @@ class _EventPageState extends State<EventPage> {
           child: FirebaseAnimatedList(
             query: eventRef,
             itemBuilder: (context, snapshot, animation, index) {
-              return Card(
-                elevation: 8.0,
-                margin: EdgeInsets.only(bottom:24.0),
-                shape: BeveledRectangleBorder(),
-                child: Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(Icons.event,size: 48.0,),
-                      title: Text(events[index].eventName),
-                      subtitle: Text(events[index].eventDesc),
-                    ),
-                    ButtonTheme.bar(
-                      child: ButtonBar(
+              return Dismissible(
+                key: formKey,
+                child: Card(
+                      elevation: 8.0,
+                      margin: EdgeInsets.only(bottom: 24.0),
+                      shape: BeveledRectangleBorder(),
+                      child: Column(
                         children: <Widget>[
-                          Text(events[index].eventDate.toString()),
+                          ListTile(
+                            leading: Icon(
+                              Icons.event,
+                              size: 48.0,
+                            ),
+                            title: Text(events[index].eventName),
+                            subtitle: Text(events[index].eventDesc),
+                          ),
+                          ButtonTheme.bar(
+                            child: ButtonBar(
+                              children: <Widget>[
+                                Text(events[index].eventDate),
+                              ],
+                            ),
+                          )
                         ],
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                    onDismissed: (direction){
+                        events.removeAt(index);
+                    },
               );
             },
           ),
@@ -157,7 +173,9 @@ class _EventPageState extends State<EventPage> {
   }
 }
 
+
 class MyEvents {
+  ///Creates an Event [Class] that stores the Events you want to present to the users.
   String eventName, eventDesc, eventDate, key;
 
   MyEvents(this.eventName, this.eventDesc, this.eventDate);

@@ -15,15 +15,15 @@ final app = FirebaseApp.configure(
 );
 
 final FirebaseAuth auth = FirebaseAuth.instance;
+
 final GoogleSignIn googleSignIn = new GoogleSignIn();
 Future<String> _testSignInWithGoogle() async {
-  final GoogleSignInAccount googleUser = await googleSignIn.signIn();
+  final GoogleSignInAccount googleUser = await googleSignIn.signInSilently();
   final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
   FirebaseUser user = await auth.signInWithGoogle(
     accessToken: googleAuth.accessToken,
     idToken: googleAuth.idToken,
   );
-
   assert(user.email != null);
   assert(user.displayName != null);
   assert(!user.isAnonymous);
@@ -35,17 +35,17 @@ Future<String> _testSignInWithGoogle() async {
 
   return 'signInWithGoogle succeeded $user';
 }
-
 void main() async {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
+  
   Widget build(BuildContext context) {
     return new MaterialApp(
       //showPerformanceOverlay: true,
-      
+
       title: "Hello World App",
       home: LoginPage(),
       routes: <String, WidgetBuilder>{
@@ -53,9 +53,7 @@ class MyApp extends StatelessWidget {
       },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: Brightness.dark,
-        textSelectionColor: Colors.white
-      ),
+          brightness: Brightness.dark, textSelectionColor: Colors.white),
     );
   }
 }
@@ -66,16 +64,18 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+   // this will check status
+  
   initState() {
     super.initState();
-    auth.onAuthStateChanged.firstWhere((user) => user != null).then((user) {
-      Navigator.of(context).pushReplacementNamed('/home');
-    });
+    
     Future
         .delayed(new Duration(seconds: 1))
         .then((_) => _testSignInWithGoogle());
+    auth.onAuthStateChanged.firstWhere((user) => user != null).then((user) {
+      Navigator.of(context).pushReplacementNamed('/home');
+    });
   }
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -83,14 +83,13 @@ class _LoginPageState extends State<LoginPage> {
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          new Text(
+          Text(
             "QR Me",
             style: TextStyle(
               fontSize: 32.0,
               fontWeight: FontWeight.bold,
             ),
           ),
-          CircularProgressIndicator(),
         ],
       ),
     ));
