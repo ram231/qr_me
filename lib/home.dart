@@ -50,8 +50,12 @@ class _MyHomePageState extends State<MyHomePage> {
     return new Scaffold(
       floatingActionButton: _DiamondFab(
         notchMargin: 8.0,
-        child: Icon(Icons.center_focus_weak),
-        onPressed: () {},
+        child: currentPage == bodyHome
+            ? Icon(Icons.center_focus_weak)
+            : Icon(Icons.add),
+        onPressed: () {
+          currentPage != bodyHome ? eventDialog() : homeDialog();
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       bottomNavigationBar: BottomNavigationBar(
@@ -103,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 leading: Icon(Icons.exit_to_app),
                 onTap: () async {
                   await signOutGoogle();
-                   
+
                   exit(0);
                   // Navigator.of(context).pushReplacementNamed('/');
                 })
@@ -112,6 +116,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
+  eventDialog() {}
+
+  homeDialog() {}
 }
 
 Future<Null> signOutGoogle() async {
