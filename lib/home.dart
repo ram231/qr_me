@@ -1,4 +1,12 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'main.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'group.dart';
+import 'events.dart';
+import 'datepick.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -6,51 +14,78 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  // Future<String> getData() async {
+  //   http.Response response = await http.get(
+  //       Uri.encodeFull("https://jsonplaceholder.typicode.com/posts"),
+  //       headers: {"Accept": "application/json"});
+  //   print(response.body);
+  // }
+
+  BodyOfHomePage bodyHome;
+  MyGroupPage groupPage;
+  EventPage eventPage;
+  DateAndTimePickerDemo datePage;
+  List<Widget> pages;
+  Widget currentPage;
+  int currentTab = 0;
+  @override
+  void initState() {
+    // TODO: implement initState
+    bodyHome = BodyOfHomePage();
+    groupPage = MyGroupPage();
+    eventPage = EventPage();
+    datePage = DateAndTimePickerDemo();
+    pages = [
+      bodyHome,
+      groupPage,
+      eventPage,
+      datePage,
+    ];
+    currentPage = bodyHome;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       floatingActionButton: _DiamondFab(
         notchMargin: 8.0,
-        child: Icon(Icons.add),
-        onPressed: () {},
+        child: currentPage == bodyHome
+            ? Icon(Icons.center_focus_weak)
+            : Icon(Icons.add),
+        onPressed: () {
+          currentPage != bodyHome ? eventDialog() : homeDialog();
+        },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: new BottomAppBar(
-          elevation: 2.0,
-          hasNotch: true,
-          color: Colors.black54,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              IconButton(
-                      icon: Icon(Icons.home),
-                      iconSize: 32.0,
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.group_work),
-                      iconSize: 32.0,
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.event_note),
-                      iconSize: 32.0,
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.settings),
-                      iconSize: 32.0,
-                      onPressed: () {},
-                    ),
-            ],
-          )),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      bottomNavigationBar: BottomNavigationBar(
+          currentIndex: currentTab,
+          onTap: (int index) {
+            setState(() {
+              currentTab = index;
+              currentPage = pages[index];
+            });
+          },
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home), title: Text("Home")),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.group), title: Text("Groups")),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.event_available),
+              title: Text("Events"),
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.add), title: Text("New"))
+          ]),
+      body: currentPage,
       appBar: AppBar(
         title: Text("QR Me"),
+        centerTitle: true,
         actions: <Widget>[
           IconButton(
             tooltip: "About",
             icon: Icon(Icons.info),
-            onPressed: (){},
+            onPressed: () {},
             iconSize: 24.0,
           )
         ],
@@ -58,9 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
       drawer: new Drawer(
         child: ListView(
           children: <Widget>[
-            DrawerHeader(
-              child: new Text("This is the Header"),
-            ),
+            userProfile,
             ListTile(
               title: Text("Home"),
               leading: Icon(Icons.home),
@@ -70,18 +103,97 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: Icon(Icons.person),
             ),
             ListTile(
-              title: Text("Exit"),
-              leading: Icon(Icons.exit_to_app),
-              onTap: () {
-                Navigator.of(context).pop();
-              },
-            )
+                title: Text("Exit"),
+                leading: Icon(Icons.exit_to_app),
+                onTap: () async {
+                  await signOutGoogle();
+
+                  exit(0);
+                  // Navigator.of(context).pushReplacementNamed('/');
+                })
           ],
         ),
       ),
     );
   }
+
+  eventDialog() {}
+
+  homeDialog() {}
 }
+
+Future<Null> signOutGoogle() async {
+  await auth.signOut();
+  await googleSignIn.signOut();
+}
+
+class BodyOfHomePage extends StatefulWidget {
+  @override
+  _BodyHomeState createState() => _BodyHomeState();
+}
+
+class _BodyHomeState extends State<BodyOfHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: 10,
+      itemBuilder: (context, index) {
+        return Card(
+            color: index % 2 == 0 ? Colors.teal : Colors.deepOrange,
+            elevation: 8.0,
+            margin: EdgeInsets.all(32.0),
+            shape: BeveledRectangleBorder(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(
+                  Icons.event,
+                  size: 64.0,
+                  color: Colors.green,
+                ),
+                ListTile(
+                  leading: Icon(Icons.add),
+                  subtitle: new Container(child: new Text("Hello World")),
+                  title: Text("Just a sample project Number: ${index+1}"),
+                ),
+                ButtonTheme.bar(
+                  child: ButtonBar(
+                    children: <Widget>[
+                      FlatButton(
+                        child: Text("Okay Number ${index + 1}"),
+                        onPressed: () {},
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ));
+      },
+    );
+  }
+}
+
+final FutureBuilder<FirebaseUser> userProfile = new FutureBuilder(
+  future: FirebaseAuth.instance.currentUser(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.done) {
+      return UserAccountsDrawerHeader(
+        onDetailsPressed: () {},
+        accountName: Text(snapshot.data.displayName,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            )),
+        accountEmail: Text(snapshot.data.email),
+        currentAccountPicture: CircleAvatar(
+          backgroundImage: NetworkImage(snapshot.data.photoUrl),
+          minRadius: 4.0,
+        ),
+      );
+    } else {
+      return Text("Loading...");
+    }
+  },
+);
 
 class _DiamondFab extends StatefulWidget {
   const _DiamondFab({
